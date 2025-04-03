@@ -9,38 +9,11 @@
     --font-color-2: #575655;
     --btn-color-1: #414040;
     --btn-color-hover: #483d8b;
-    color: var(--font-color-1);
+    /* color: var(--font-color-1); */
 }
 
 body {
     background-color: var(--bg-color-1);
     width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-h1 {
-    color: var(--font-color-2);
-}
-
-button {
-    background-color: var(--btn-color-1);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: 0.3s all ease;
-}
-
-button:hover {
-    background-color: var(--btn-color-hover);
-}
-
-button:disabled {
-    background-color: var(--bg-color-3);
-    color: var(--font-color-2);
-    cursor: not-allowed;
+    height: 100%;
 }

@@ -1,106 +1,44 @@
-import { useRef, useState, useEffect } from "react";
-import "./Main.css";
+import React, { useState } from 'react';
+import { Container, Typography, TextField, Button, Stack, Paper } from '@mui/material';
+import CallIcon from '@mui/icons-material/Call';
+import MicIcon from '@mui/icons-material/Mic';
+import SendIcon from '@mui/icons-material/Send';
 
-// use this tutorial for actual webrtc connection
-// https://www.videosdk.live/developer-hub/webrtc/webrtc-react
-
-function App() {
-  const [started, setStarted] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const audioRef = useRef(null);
-  const audioContextRef = useRef(null);
-  const analyserRef = useRef(null);
-  const streamRef = useRef(null);
-
-  const start = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      setStarted(true);
-      streamRef.current = stream;
-
-      // Set up audio context and analyser
-      const audioContext = new AudioContext();
-      audioContextRef.current = audioContext;
-
-      const source = audioContext.createMediaStreamSource(stream);
-      const analyser = audioContext.createAnalyser();
-      analyser.fftSize = 256; // Determines the frequency data size
-      analyserRef.current = analyser;
-
-      source.connect(analyser);
-
-      // Set the audio stream to the audio element
-      if (audioRef.current) {
-        audioRef.current.srcObject = stream;
-        audioRef.current.play();
-      }
-    } catch (error) {
-      console.error("Error accessing microphone:", error);
-      setStarted(false);
-    }
-  };
-
-  const stop = () => {
-    setStarted(false);
-    setIsSpeaking(false);
-
-    // Stop the audio stream
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-    }
-
-    // Close the audio context
-    if (audioContextRef.current) {
-      audioContextRef.current.close();
-    }
-  };
-
-  useEffect(() => {
-    if (!started) return;
-
-    const analyser = analyserRef.current;
-    const dataArray = new Uint8Array(analyser.fftSize);
-
-    const monitorAudio = () => {
-      analyser.getByteFrequencyData(dataArray);
-
-      // Calculate average volume
-      const avgVolume =
-        dataArray.reduce((sum, value) => sum + value, 0) / dataArray.length;
-
-      console.log(avgVolume)
-
-      // Set isSpeaking to true if volume exceeds a threshold
-      setIsSpeaking(avgVolume > 2); // Adjust threshold as needed
-
-      if (started) {
-        requestAnimationFrame(monitorAudio);
-      }
-    };
-
-    monitorAudio();
-
-    // Cleanup function to stop monitoring when `started` is false
-    return () => {
-      setIsSpeaking(false);
-    };
-  }, [started]);
+export default function App() {
+  const [roomId, setRoomId] = useState('');
 
   return (
-    <div className="main">
-      <h1>WebRTC Audio Detection</h1>
-      <button onClick={start} disabled={started}>
-        Start
-      </button>
-      <button onClick={stop} disabled={!started}>
-        Stop
-      </button>
-      <audio ref={audioRef} />
-      <div className={`status ${isSpeaking ? "speaking" : ""}`}>
-        <p>You</p>
-      </div>
-    </div>
+    <Container maxWidth="sm" sx={{ mt: 10 }}>
+      <Paper elevation={6} sx={{ p: 4, borderRadius: 4, backdropFilter: 'blur(8px)' }}>
+        <Typography variant="h4" align="center" gutterBottom>
+          🔗 Transmission Link
+        </Typography>
+        <Typography variant="subtitle1" align="center" color="text.secondary" gutterBottom>
+          Secure Peer-to-Peer Voice Chat
+        </Typography>
+        <TextField
+          fullWidth
+          variant="outlined"
+          label="Enter Room ID"
+          value={roomId}
+          onChange={(e) => setRoomId(e.target.value)}
+          sx={{ mb: 3 }}
+        />
+        <Stack direction="row" spacing={2} justifyContent="center" sx={{ mb: 2 }}>
+          <Button variant="contained" startIcon={<CallIcon />} color="primary">
+            Join Call
+          </Button>
+          <Button variant="outlined" startIcon={<MicIcon />}>
+            Record
+          </Button>
+        </Stack>
+        <Button fullWidth variant="contained" endIcon={<SendIcon />} color="secondary">
+          Send Audio Message
+        </Button>
+        <Typography variant="caption" display="block" align="center" sx={{ mt: 2 }} color="text.secondary">
+          
+        </Typography>
+      </Paper>
+    </Container>
   );
 }
-
-export default App;
