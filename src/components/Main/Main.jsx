@@ -8,9 +8,8 @@ import {
   Paper,
 } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
-import MicIcon from "@mui/icons-material/Mic";
-import SendIcon from "@mui/icons-material/Send";
 import AddIcon from "@mui/icons-material/Add";
+import Record from "../Record/Record.jsx"
 
 export default function Main({ onJoin }) {
   const [roomId, setRoomId] = useState("");
@@ -24,12 +23,13 @@ export default function Main({ onJoin }) {
     }
   };
 
-  // New function to generate a random room ID and join the room
+  // Function to generate a random room ID and join the room
   const handleCreateRoom = () => {
     const newRoomId = Math.random().toString(36).substring(2, 10); // generate an 8-char id for the user 
     setRoomId(newRoomId);
     console.log(`Created room: ${newRoomId}`);
-    onJoin(newRoomId); // Automatically join to the room 
+    onJoin(newRoomId); // Automatically join to the room
+    // functionality for hosting the room on webrtc goes here
   };
 
   return (
@@ -71,29 +71,16 @@ export default function Main({ onJoin }) {
           >
             Join Call
           </Button>
-          <Button variant="outlined" startIcon={<MicIcon />}>
-            Record
-          </Button>
-        </Stack>
-        <Stack direction="column" spacing={2} justifyContent="center">
           <Button
-            fullWidth
             variant="contained"
-            endIcon={<SendIcon />}
-            color="secondary"
-          >
-            Send Audio Message
-          </Button>
-          <Button
-            fullWidth
-            variant="contained"
-            endIcon={<AddIcon />}
+            startIcon={<AddIcon />}
             color="secondary"
             onClick={handleCreateRoom}
           >
             Create New Room
           </Button>
         </Stack>
+        <Record/>
         <Typography
           variant="caption"
           display="block"
