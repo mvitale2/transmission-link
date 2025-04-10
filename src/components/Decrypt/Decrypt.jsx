@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from "../../SupabaseClient";
 import { Button, Stack, Container, Paper, Typography, TextField } from "@mui/material";
 
 function Decrypt({ fileName }) {
-  // supabase stuff
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
   const [input, setInput] = useState('');
   const [decrypted, setDecrypted] = useState(false)
   const [fileContent, setFileContent] = useState(null);
