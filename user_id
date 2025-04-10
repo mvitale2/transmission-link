@@ -1,0 +1,56 @@
+const { createCanvas } = require('canvas');
+const fs = require('fs');
+
+// Generate a random UID
+function generateRandomUID() {
+    return 'user_' + Math.random().toString(36).substr(2, 9); // Generates a random UID like user_dg83hs9
+}
+
+// Generate a random profile letter + 3-digit random number
+function generateRandomProfilePicture() {
+    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; 
+    const randomLetterIndex = Math.floor(Math.random() * letters.length); 
+    const randomLetter = letters[randomLetterIndex]; // Random letter from A-Z
+
+    const randomNumber = Math.floor(Math.random() * 900) + 100; // 3-digit random number (100-999)
+
+    return randomLetter + randomNumber;  // Returns letter + 3-digit number, e.g., 'A123'
+}
+
+// Function to generate profile picture with letter and random number
+function generateAvatar(letterAndNumber, filePath) {
+    // Create a canvas with a width and height of 200px
+    const canvas = createCanvas(200, 200);
+    const ctx = canvas.getContext('2d');
+
+    // Set the background color
+    ctx.fillStyle = '#3498db';  // Blue background
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Set the text properties
+    ctx.font = '40px Arial'; // Text size
+    ctx.fillStyle = '#ffffff'; // White text color
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Draw the letter + number in the center of the canvas
+    ctx.fillText(letterAndNumber, canvas.width / 2, canvas.height / 2);
+
+    // Convert canvas to a buffer and save it as a PNG file
+    const out = fs.createWriteStream(filePath);
+    const stream = canvas.createPNGStream();
+    stream.pipe(out);
+    out.on('finish', () => {
+        console.log(`Avatar saved to ${filePath}`);
+    });
+}
+
+// Generate a random UID and profile picture
+const userUID = generateRandomUID();
+const userProfilePicture = generateRandomProfilePicture();
+
+// Generate avatar and save it to a file
+generateAvatar(userProfilePicture, `./profile_${userProfilePicture}.png`);
+
+console.log("Generated UID:", userUID);
+console.log("Generated Profile Picture:", userProfilePicture);
