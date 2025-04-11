@@ -6,6 +6,7 @@ import {
   Button,
   Stack,
   Paper,
+  Link
 } from "@mui/material";
 import CallIcon from "@mui/icons-material/Call";
 import AddIcon from "@mui/icons-material/Add";
@@ -13,6 +14,9 @@ import Record from "../Record/Record.jsx"
 
 export default function Main({ onJoin }) {
   const [roomId, setRoomId] = useState("");
+  const currentUrl = window.location.href;
+  const homeUrl = currentUrl.replace(/\?.*/, "");
+
 
   const handleJoin = () => {
     if (roomId !== "") {
@@ -39,7 +43,7 @@ export default function Main({ onJoin }) {
         sx={{ p: 4, borderRadius: 4, backdropFilter: "blur(8px)" }}
       >
         <Typography variant="h4" align="center" gutterBottom>
-          🔗 Transmission Link
+          <Link href={homeUrl} underline="none" color="inherit">🔗 Transmission Link</Link>
         </Typography>
         <Typography
           variant="subtitle1"

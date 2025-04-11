@@ -2,18 +2,18 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    --bg-color-1: #151515;
+    /* --bg-color-1: #151515;
     --bg-color-2: #2b2b2a;
     --bg-color-3: #5f5f5e;
     --font-color-1: #dbd8d6;
     --font-color-2: #575655;
     --btn-color-1: #414040;
-    --btn-color-hover: #483d8b;
+    --btn-color-hover: #483d8b; */
     /* color: var(--font-color-1); */
 }
 
-body {
+/* body {
     background-color: var(--bg-color-1);
     width: 100vw;
     height: 100%;
-}
+} */
