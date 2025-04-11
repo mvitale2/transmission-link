@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { supabase } from "../../SupabaseClient";
+import { supabase } from '../../SupabaseClient.jsx';
 import { Button, Stack, Container, Paper, Typography, TextField } from "@mui/material";
 
 function Decrypt({ fileName }) {

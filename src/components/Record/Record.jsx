@@ -14,7 +14,7 @@ import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import InputAdornment from "@mui/material/InputAdornment";
 
 // Import the Supabase client from the centralized file (adjust path/casing as needed)
-import { supabase } from "../../supabaseClient";
+import { supabase } from "../../SupabaseClient.jsx";
 
 // ------------------- SHARE LINK COMPONENT -------------------
 function ShareLink({ id }) {
@@ -89,6 +89,12 @@ function Record() {
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
 
+  // Notify Record component of the password
+  const handlePasswordChange = (newPassword) => {
+    setPassword(newPassword);
+    setSendDisabled(newPassword === "");
+  };
+
   // ------------------- Encryption and Utility Functions -------------------
   const generateRandId = () => {
     const characters =
@@ -137,11 +143,10 @@ function Record() {
       arrayBuffer
     );
 
-    console.log("Encryption complete");
     return {
       ciphertext: new Uint8Array(encrypted),
-      salt: salt, // raw salt; we'll convert when storing
-      iv: iv,
+      salt: btoa(String.fromCharCode(...salt)),
+      iv: btoa(String.fromCharCode(...iv)),
     };
   }
   // ------------------------------------------------------------------------
@@ -225,7 +230,7 @@ function Record() {
     );
     // Create a new Blob from the ciphertext
     const file = new Blob([ciphertext], { type: "application/octet-stream" });
-    console.log("Encrypted audio file created, size:", file.size);
+    // console.log("Encrypted audio file created, size:", file.size);
 
     // Upload the encrypted file to Supabase storage
     const { data, error } = await supabase.storage
@@ -252,9 +257,10 @@ function Record() {
 
     if (metadataError) {
       console.error("Error uploading metadata:", metadataError);
-    } else {
-      console.log("Metadata uploaded successfully:", metadata);
-    }
+    } 
+    // else {
+    //   // console.log("Metadata uploaded successfully:", metadata);
+    // }
   }
 
   const sendAudio = () => {
@@ -303,9 +309,7 @@ function Record() {
           Send Voice Message
         </Button>
         <PasswordField
-          onPasswordChange={(p) => {
-            handlePasswordChange(p);
-          }}
+          onPasswordChange={handlePasswordChange}
           visible={showPasswordField}
         />
         {/* Preview the recorded audio if available */}
