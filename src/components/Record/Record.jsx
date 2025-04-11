@@ -25,7 +25,7 @@ function ShareLink({ id }) {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(shareLink);
-      console.log("Link copied to clipboard:", shareLink);
+      // console.log("Link copied to clipboard:", shareLink);
     } catch (error) {
       console.error("Error copying link:", error);
     }
@@ -45,13 +45,13 @@ function PasswordField({ onPasswordChange, visible }) {
 
   const handleClick = () => {
     setShowPassword(!showPassword);
-    console.log("Show password toggled:", !showPassword);
+    // console.log("Show password toggled:", !showPassword);
   };
 
   const handleChange = (e) => {
     const newPassword = e.target.value;
     onPasswordChange(newPassword); // Notify parent component of the password change
-    console.log("Password field changed, new value:", newPassword);
+    // console.log("Password field changed, new value:", newPassword);
   };
 
   return (
@@ -81,11 +81,10 @@ function Record() {
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const [sendDisabled, setSendDisabled] = useState(true);
-  const [linkVisible, setLinkVisible] = useState(false);
-  const [linkId, setLinkId] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPasswordField, setShowPasswordField] = useState(false);
-
+  const [linkVisible, setLinkVisible] = useState(false)
+  const [linkId, setLinkId] = useState('')
+  const [password, setPassword] = useState('')
+  const [showPasswordField, setShowPasswordField] = useState(false)
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
 
@@ -157,14 +156,14 @@ function Record() {
     try {
       // Request microphone access
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      console.log("Microphone access granted. Stream:", stream);
+      // console.log("Microphone access granted. Stream:", stream);
 
       // Initialize MediaRecorder; specify mimeType if needed (e.g., "audio/webm")
       const mediaRecorder = new MediaRecorder(stream, {
         mimeType: "audio/webm",
       });
       mediaRecorderRef.current = mediaRecorder;
-      console.log("MediaRecorder initialized:", mediaRecorder);
+      // console.log("MediaRecorder initialized:", mediaRecorder);
 
       // Clear previous audio chunks
       audioChunksRef.current = [];
@@ -184,12 +183,12 @@ function Record() {
 
       // Handle recording stop
       mediaRecorder.onstop = () => {
-        console.log(
-          "Recording stopped. Collected audio chunks:",
-          audioChunksRef.current
-        );
+        // console.log(
+        //   "Recording stopped. Collected audio chunks:",
+        //   audioChunksRef.current
+        // );
         const blob = new Blob(audioChunksRef.current, { type: "audio/webm" });
-        console.log("Created audio blob, size:", blob.size);
+        // console.log("Created audio blob, size:", blob.size);
         setAudioBlob(blob);
         // Do not enable send until a password is provided.
         // setSendDisabled(false);
@@ -197,9 +196,9 @@ function Record() {
 
       // Start recording
       mediaRecorder.start();
-      console.log("Recording started.");
+      // console.log("Recording started.");
       setIsRecording(true);
-      setSendDisabled(true); // Disable send while recording
+      setSendDisabled(true);
     } catch (error) {
       console.error("Error accessing microphone:", error);
     }
