@@ -149,13 +149,7 @@ function Record() {
     // Upload the encrypted file to Supabase storage
     const { data, error } = await supabase.storage
       .from("encrypted-audio-messages")
-      .upload(fileName, file, {
-        metadata: {
-          // Convert salt and iv to Base64 strings for storage
-          salt: btoa(String.fromCharCode(...salt)),
-          iv: btoa(String.fromCharCode(...iv)),
-        },
-      });
+      .upload(fileName, file);
     if (error) {
       console.error("Error uploading encrypted audio:", error);
     } else {

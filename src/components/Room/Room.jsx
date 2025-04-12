@@ -3,7 +3,9 @@ import { Container, Typography, Button, Stack, Paper } from "@mui/material";
 import io from "socket.io-client";
 
 // Signaling server URL
-const SIGNALING_SERVER_URL = "localhost:5000"; //could make this your personal ip but currently dont know how to get all functionality working there without the use of ngrok. 
+const currentUrl = window.location.href;
+const baseUrl = currentUrl.replace(/\?.*/, ""); // Remove any query parameters
+const SIGNALING_SERVER_URL = `${baseUrl}:5000`; //could make this your personal ip but currently dont know how to get all functionality working there without the use of ngrok. 
 
 // ICE server config (STUN only; add TURN servers for production)
 const ICE_SERVERS = {

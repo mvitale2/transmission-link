@@ -97,6 +97,7 @@ function Decrypt({ fileName }) {
       );
   
       setStateMessage(null)
+      
       // Return a valid Blob
       return new Blob([decrypted], { type: "audio/webm" });
     } catch (error) {
