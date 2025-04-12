@@ -1,20 +1,16 @@
 import React, { useState, useRef } from "react";
 import {
   Button,
-  IconButton,
   Stack,
   Typography,
   TextField,
 } from "@mui/material";
+import { encryptMessage } from "../Encryption/Encryption.jsx";
 import MicIcon from "@mui/icons-material/Mic";
 import SendIcon from "@mui/icons-material/Send";
 import CopyIcon from "@mui/icons-material/ContentCopy";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import InputAdornment from "@mui/material/InputAdornment";
-
-// Import the Supabase client from the centralized file (adjust path/casing as needed)
 import { supabase } from "../../SupabaseClient.jsx";
+import PasswordField from "../PasswordField/PasswordField.jsx";
 
 // ------------------- SHARE LINK COMPONENT -------------------
 function ShareLink({ id }) {
@@ -39,43 +35,6 @@ function ShareLink({ id }) {
   );
 }
 
-// ------------------- PASSWORD FIELD COMPONENT -------------------
-function PasswordField({ onPasswordChange, visible }) {
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleClick = () => {
-    setShowPassword(!showPassword);
-    // console.log("Show password toggled:", !showPassword);
-  };
-
-  const handleChange = (e) => {
-    const newPassword = e.target.value;
-    onPasswordChange(newPassword); // Notify parent component of the password change
-    // console.log("Password field changed, new value:", newPassword);
-  };
-
-  return (
-    <div style={{ display: visible ? "block" : "none" }}>
-      <Typography>Enter a password to send your message:</Typography>
-      <TextField
-        type={showPassword ? "text" : "password"}
-        label="Password"
-        onChange={handleChange}
-        fullWidth
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton onClick={handleClick} edge="end">
-                {showPassword ? <VisibilityOffIcon /> : <Visibility />}
-              </IconButton>
-            </InputAdornment>
-          ),
-        }}
-      />
-    </div>
-  );
-}
-
 // ------------------- RECORD COMPONENT -------------------
 function Record() {
   const [isRecording, setIsRecording] = useState(false);
@@ -94,7 +53,6 @@ function Record() {
     setSendDisabled(newPassword === "");
   };
 
-  // ------------------- Encryption and Utility Functions -------------------
   const generateRandId = () => {
     const characters =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -106,49 +64,6 @@ function Record() {
     console.log("Generated random ID:", result);
     return result;
   };
-
-  async function deriveKey(passphrase, salt) {
-    const encoder = new TextEncoder();
-    const keyMaterial = await crypto.subtle.importKey(
-      "raw",
-      encoder.encode(passphrase),
-      { name: "PBKDF2" },
-      false,
-      ["deriveKey"]
-    );
-    return crypto.subtle.deriveKey(
-      {
-        name: "PBKDF2",
-        salt,
-        iterations: 100000,
-        hash: "SHA-256",
-      },
-      keyMaterial,
-      { name: "AES-GCM", length: 256 },
-      false,
-      ["encrypt", "decrypt"]
-    );
-  }
-
-  async function encryptMessage(passphrase, audio) {
-    const salt = crypto.getRandomValues(new Uint8Array(16));
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const key = await deriveKey(passphrase, salt);
-    const arrayBuffer = await audio.arrayBuffer();
-
-    const encrypted = await crypto.subtle.encrypt(
-      { name: "AES-GCM", iv },
-      key,
-      arrayBuffer
-    );
-
-    return {
-      ciphertext: new Uint8Array(encrypted),
-      salt: btoa(String.fromCharCode(...salt)),
-      iv: btoa(String.fromCharCode(...iv)),
-    };
-  }
-  // ------------------------------------------------------------------------
 
   // ------------------- Audio Recording Functions -------------------
   const startRecording = async () => {
@@ -310,6 +225,7 @@ function Record() {
         <PasswordField
           onPasswordChange={handlePasswordChange}
           visible={showPasswordField}
+          text={true}
         />
         {/* Preview the recorded audio if available */}
         {audioBlob && <audio controls src={URL.createObjectURL(audioBlob)} />}

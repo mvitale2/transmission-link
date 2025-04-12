@@ -15,7 +15,7 @@ function App() {
     const id = params.get("voiceId");
     if (id) {
       setVoiceId(id);
-      console.log(`Obtained voice id: ${id}`);
+      // console.log(`Obtained voice id: ${id}`);
     }
   }, []);
 

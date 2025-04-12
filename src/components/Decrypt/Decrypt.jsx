@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import { supabase } from '../../SupabaseClient.jsx';
 import { Button, Stack, Container, Paper, Typography, TextField } from "@mui/material";
+import { deriveKey } from '../Encryption/Encryption.jsx';
+import PasswordField from '../PasswordField/PasswordField.jsx';
 
 function Decrypt({ fileName }) {
-  const [input, setInput] = useState('');
+  const [password, setPassword] = useState('');
   const [decrypted, setDecrypted] = useState(false)
   const [fileContent, setFileContent] = useState(null);
   const [audio, setAudio] = useState(null);
@@ -23,17 +25,27 @@ function Decrypt({ fileName }) {
         // console.log("Salt (Base64):", saltB64);
         // console.log("IV (Base64):", ivB64);
 
-        const decryptedAudio = await decryptBlob(arrayBuffer, input, saltB64, ivB64)
+        const decryptedAudio = await decryptBlob(arrayBuffer, password, saltB64, ivB64)
         setAudio(decryptedAudio)
         setDecrypted(true)
+        setPassword('')
     } catch (error) {
         console.log(error)
         setDecrypted(false)
     }
   }
 
+  const handlePasswordChange = (newPassword) => {
+    setPassword(newPassword);
+  };
+
   const retrieveFile = async () => {
     try {
+      // Double check to ensure that the retrieved filename is valid
+      if (typeof fileName !== 'string' || fileName.length > 255) {
+        throw new Error('Invalid filename');
+      }
+
       // Download the file
       const { data: fileData, error: fileError } = await supabase.storage
         .from('encrypted-audio-messages')
@@ -72,30 +84,6 @@ function Decrypt({ fileName }) {
     }
   };
 
-  async function deriveKey(passphrase, salt) {
-    const encoder = new TextEncoder();
-    const keyMaterial = await crypto.subtle.importKey(
-      "raw",
-      encoder.encode(passphrase),
-      { name: "PBKDF2" },
-      false,
-      ["deriveKey"]
-    )
-
-    return crypto.subtle.deriveKey(
-      {
-        name: "PBKDF2",
-        salt,
-        iterations: 100000,
-        hash: "SHA-256"
-      },
-      keyMaterial,
-      { name: "AES-GCM", length: 256},
-      false,
-      ["encrypt", "decrypt"]
-    )
-  }
-
   async function decryptBlob(ciphertext, passphrase, saltB64, ivB64) {
     try {
       const salt = Uint8Array.from(atob(saltB64), c => c.charCodeAt(0));
@@ -121,19 +109,11 @@ function Decrypt({ fileName }) {
   return (
     <Container maxWidth="sm" sx={{ mt: 10 }}>
         <Paper elevation={6} sx={{ p: 4, borderRadius: 4, backdropFilter: "blur(8px)" }}>
-            <Typography variant='h4' align='center' gutterBottom>
+            <Typography variant='h5' align='center' gutterBottom>
                 Enter the password to hear this message:
             </Typography>
-            <TextField 
-                fullWidth
-                variant='outlined'
-                label='Enter password'
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                sx={{ mb: 3 }}
-                type='password'
-            />
             <Stack direction='column' spacing={2} justifyContent='center' sx={{ mb: 2 }}>
+                <PasswordField onPasswordChange={handlePasswordChange} />
                 <Button variant='contained' color="primary" onClick={handleSubmit} disabled={submitDisabled}>
                     Submit
                 </Button>
